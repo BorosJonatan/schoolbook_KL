@@ -1,0 +1,9 @@
+git init
+
+git status
+
+git checkout -b [nev] //létrehozza és checkoutolja is
+
+git add .
+git commit -m "message"
+git remote add origin [url_to_remote_repository
