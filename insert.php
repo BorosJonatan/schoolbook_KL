@@ -29,7 +29,6 @@ function generateMarksAndStudents(){
         for ($i = 0; $i < $classNumber; $i++){
             $query = execQuery("SELECT year FROM classes WHERE id = $class_id LIMIT 1;");
             $year = $query[0]['year'];
-            var_dump($year);
             $lastname = NAMES['lastnames'][array_rand(NAMES['lastnames'])];
             $firstname = NAMES['firstnames'][array_rand(NAMES['firstnames'])];
             $name = "$lastname $firstname";
