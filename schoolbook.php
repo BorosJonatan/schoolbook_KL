@@ -1,9 +1,8 @@
 <?php
+session_start();
 require_once('create_db.php');
-require_once('insert.php');
 require_once('schoolbook_html.php');
 
-session_start();
 //osszes ev osztalyok
 if (isset($_SESSION['year'])) {
     $data_assoc = execQuery("SELECT DISTINCT year FROM classes c;");
@@ -24,7 +23,7 @@ if (isset($_POST['year'])){
     $year = $_SESSION['year'];
 }
 else {
-    $_SESSION['year'] = $years[1];
+    $_SESSION['year'] = $years[0];
     $year = $_SESSION['year'];
 }
 
@@ -46,15 +45,11 @@ else {
 if (isset($_POST['oszt'])){
     $_SESSION['oszt'] = $_POST['oszt'];
     $oszt = $_SESSION['oszt'];
-    showStudents($oszt);
 }
 else {
     $_SESSION['oszt'] = '11a';
     $oszt = $_SESSION['oszt'];
-    showStudents($oszt);
 }
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -93,3 +88,8 @@ else {
     </form>
 </body>
 </html>
+
+<?php
+if (isset($_POST['oszt'])){
+    showStudents($oszt);
+}

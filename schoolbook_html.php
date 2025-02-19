@@ -8,12 +8,11 @@ function showStudents($oszt)
     FROM students s
     JOIN classes c ON s.class_id = c.id
     WHERE c.name = '$oszt';");
-    var_dump($data_assoc);
     $array = array_column($data_assoc, 'name');
 
     echo "<table>";
     echo "<h3>$oszt</h3>";
-    echo "<tr>Sorszám<th></th><th>Név</th>";
+    echo "<tr><th>Sorszám</th><th>Név</th></tr>";
     
     foreach ($array as $i => $student){
         $in = $i+1;
