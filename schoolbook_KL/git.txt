@@ -1,0 +1,11 @@
+git init
+
+git status
+
+git checkout -b develop //létrehozza és checkoutolja is a develop branchet
+
+git add .
+git commit -m "message"
+git remote add origin [url_to_remote_repository]
+git push --set-upstream origin develop
+asfasfasfsafasgasg
