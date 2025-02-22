@@ -51,7 +51,7 @@ function execDB($sql, $host = 'localhost', $user = 'root', $pass = '', $dbname =
       
       if (stripos($sql, 'CREATE DATABASE') === 0) {
           if (mysqli_query($conn, $sql)) {
-              echo "Database created successfully.";
+              //echo "Database created successfully.";
           } else {
               throw new Exception("Error creating database: " . mysqli_error($conn));
           }
@@ -64,7 +64,7 @@ function execDB($sql, $host = 'localhost', $user = 'root', $pass = '', $dbname =
     } elseif (stripos($sql, 'CREATE TABLE') === 0) {
           mysqli_select_db($conn, $dbname);
           if (mysqli_query($conn, $sql)) {
-              echo "Table created successfully.";
+              //echo "Table created successfully.";
           } else {
               throw new Exception("Error creating table: " . mysqli_error($conn));
           }
@@ -124,7 +124,7 @@ function execSQL($sql, $host = 'localhost', $user = 'root', $pass = '', $dbname 
 
 function insertIfNot($table, $maxRecords, $insertSQL, $host = 'localhost', $user = 'root', $pass = '', $dbname = 'schoolbook') {
   $count = execQuery("SELECT COUNT(*) as count FROM `$table`", $host, $user, $pass, $dbname);
-  if ($count && $count[0]['count'] < $maxRecords) {
+  if ($count && $count[0]['count'] <= $maxRecords) {
       return execSQL($insertSQL, $host, $user, $pass, $dbname);
   } else {
       return 0;

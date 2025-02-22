@@ -20,34 +20,50 @@ function generateClasses()
     }
 }
 
-function generateMarksAndStudents(){
+function generateMarksAndStudents() {
     $class_id = 0;
-    foreach (CLASSES as $class){
+    foreach (CLASSES as $class) {
         $class_id++;
         $classNumber = rand(10, 15);
-        $maxCount = $classNumber*6;
-        for ($i = 0; $i < $classNumber; $i++){
+        $maxCount = $classNumber * 6;
+        for ($i = 0; $i < $classNumber; $i++) {
             $query = execQuery("SELECT year FROM classes WHERE id = $class_id LIMIT 1;");
+            if (!$query) {
+                die("Hiba: Az osztály évének lekérdezése sikertelen.");
+            }
             $year = $query[0]['year'];
             $lastname = NAMES['lastnames'][array_rand(NAMES['lastnames'])];
             $firstname = NAMES['firstnames'][array_rand(NAMES['firstnames'])];
             $name = "$lastname $firstname";
             insertIfNot('students', $maxCount, "INSERT INTO `students`(name, class_id) VALUES ('$name', $class_id)");
-            foreach(SUBJ as $index => $subject){
+            $studentQuery = execQuery("SELECT id FROM students WHERE name = '$name' AND class_id = $class_id LIMIT 1;");
+            if (!$studentQuery) {
+                die("Hiba: A diák ID lekérdezése sikertelen.");
+            }
+            $studentId = $studentQuery[0]['id'];
+            foreach (SUBJ as $subject) {
+                $subjectQuery = execQuery("SELECT id FROM subjects WHERE name = '$subject' LIMIT 1;");
+                if (!$subjectQuery) {
+                    die("Hiba: A tantárgy ID lekérdezése sikertelen.");
+                }
+                $subjectId = $subjectQuery[0]['id'];
                 $markCount = rand(3, 5);
                 $maxMarkCount = $markCount * $maxCount;
-                for ($j = 0; $j < $markCount;$j++){
-                    $mark = rand(1,5);
-                    $start = strtotime("$year-01-01 00:00:00");
-                    $end = strtotime("$year-12-31 23:59:59");
+                for ($j = 0; $j < $markCount; $j++) {
+                    $mark = rand(1, 5);
+                    $start = strtotime("$year-01-01");
+                    $end = strtotime("$year-12-31");
                     $randomTimestamp = mt_rand($start, $end);
                     $date = date("Y-m-d", $randomTimestamp);
-                    insertIfNot('marks', $maxMarkCount, "INSERT INTO `marks`(student_id, subject_id, mark, date) VALUES ($i+1, $index+1, $mark, '$date');");
+                    insertIfNot('marks', $maxMarkCount, 
+                        "INSERT INTO `marks`(student_id, subject_id, mark, date) 
+                         VALUES ($studentId, $subjectId, $mark, '$date')");
                 }
             }
         }
     }
 }
+
 
 
 
