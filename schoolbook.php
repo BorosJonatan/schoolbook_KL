@@ -109,9 +109,12 @@ require_once('schoolbook_html.php');
         <input type="hidden" name="oszt" value="<?php print_r($oszt); ?>">
         <label for="mode">Válassz évet:</label>
         <select name="mode" id="mode">
-            <option value="names" <?= ($mode == "names") ? 'selected' : '' ?>>Osztályok</option>
-
+            <option value="names" <?= ($mode == "names") ? 'selected' : '' ?>>Osztály</option>
             <option value="Classavg" <?= ($mode == "Classavg") ? 'selected' : '' ?>>Osztály Átlaga</option>
+            <option value="studentAvg" <?= ($mode == "studentAvg") ? 'selected' : '' ?>>Osztályok átlaga tantárgyanként</option>
+            <option value="studentAvg_subj" <?= ($mode == "studentAvg_subj") ? 'selected' : '' ?>>Tanulók átlaga tantárgyanként</option>
+            <option value="ClassAvg_subj" <?= ($mode == "ClassAvg_subj") ? 'selected' : '' ?>>Osztályok átlaga tantárgyanként</option>
+            <option value="top10" <?= ($mode == "top10") ? 'selected' : '' ?>>TOP 10 diák</option>
         </select>
         <button  type="submit" class="indito">Ev kivalasztasa</button>
     </form>
@@ -120,10 +123,22 @@ require_once('schoolbook_html.php');
 
 <?php
 if (isset($_POST['mode'])){
-    if ($_POST['mode'] == "Classavg"){
-        getCLassAVG($oszt);
-    }
     if ($_POST['mode'] == "names"){
         showStudents($oszt);
+    }
+    if ($_POST['mode'] == "Classavg"){
+        getCLassAVG();
+    }
+    if ($_POST['mode'] == "studentAvg"){
+        getStudentAvg();
+    }
+    if ($_POST['mode'] == "studentAvg_subj"){
+        getStudentAvg_subj();
+    }
+    if ($_POST['mode'] == "ClassAvg_subj"){
+        showClassAvg_subj();
+    }
+    if ($_POST['mode'] == "top10"){
+        getTop10StudentAvg();
     }
 }
