@@ -10,11 +10,12 @@ require_once('schoolbook_html.php');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database Creation</title>
+    <link rel="stylesheet" href="schoolbook.css">
 </head>
 <body>
-    <form method="POST">
+    <form class="db_gomb" method="POST">
         <button id="a" name="sql" type="submit" value="create_db">DB generálása</button>
-        <button id="a" name="sql" type="submit" value="delete_db">DB törlése</button>
+        <button style="background-color: red; min-width: 40px;" id="a" name="admin" type="submit" value="goToAdmin">ADMIN</button>
     </form>
 
     <?php
@@ -48,26 +49,22 @@ require_once('schoolbook_html.php');
         $tmp = array_column($data_assoc, 'name');
         $_SESSION['osztalyok'] = $tmp;
         $osztalyok = $_SESSION['osztalyok'];
-        print_r($osztalyok);
     }
     else {
         $data_assoc = execQuery("SELECT DISTINCT name FROM classes c WHERE year = $year;");
         $tmp = array_column($data_assoc, 'name');
         $_SESSION['osztalyok'] = $tmp;
         $osztalyok = $_SESSION['osztalyok'];
-        print_r($osztalyok);
     }
     
     //kivalasztott osztaly
     if (isset($_POST['oszt'])){
         $_SESSION['oszt'] = $_POST['oszt'];
         $oszt = $_SESSION['oszt'];
-        print_r($oszt);
     }
     else {
         $_SESSION['oszt'] = '11a';
         $oszt = $_SESSION['oszt'];
-        print_r($oszt);
     }
 
     //atlagok
@@ -91,7 +88,7 @@ require_once('schoolbook_html.php');
             ?>
         </select>
         <button  type="submit" class="indito">Ev kivalasztasa</button>
-    </form>
+    </form><br>
     <form action="schoolbook.php" method="POST">
         <input type="hidden" name="year" value="<?php print_r($year); ?>">
         <label for="oszt">Válassz osztályt:</label>
@@ -103,15 +100,14 @@ require_once('schoolbook_html.php');
         ?>
         </select>
         <button  type="submit" class="indito">Osztaly kivalasztasa</button>
-    </form>
+    </form><br>
     <form action="schoolbook.php" method="POST" class="cimkek">
         <input type="hidden" name="year" value="<?php print_r($year); ?>">
         <input type="hidden" name="oszt" value="<?php print_r($oszt); ?>">
         <label for="mode">Válassz évet:</label>
         <select name="mode" id="mode">
             <option value="names" <?= ($mode == "names") ? 'selected' : '' ?>>Osztály</option>
-            <option value="Classavg" <?= ($mode == "Classavg") ? 'selected' : '' ?>>Osztály Átlaga</option>
-            <option value="studentAvg" <?= ($mode == "studentAvg") ? 'selected' : '' ?>>Osztályok átlaga tantárgyanként</option>
+            <option value="studentAvg" <?= ($mode == "studentAvg") ? 'selected' : '' ?>>Kiválasztott osztály átlaga </option>
             <option value="studentAvg_subj" <?= ($mode == "studentAvg_subj") ? 'selected' : '' ?>>Tanulók átlaga tantárgyanként</option>
             <option value="ClassAvg_subj" <?= ($mode == "ClassAvg_subj") ? 'selected' : '' ?>>Osztályok átlaga tantárgyanként</option>
             <option value="top10" <?= ($mode == "top10") ? 'selected' : '' ?>>TOP 10 diák</option>
@@ -126,9 +122,6 @@ if (isset($_POST['mode'])){
     if ($_POST['mode'] == "names"){
         showStudents($oszt);
     }
-    if ($_POST['mode'] == "Classavg"){
-        getCLassAVG();
-    }
     if ($_POST['mode'] == "studentAvg"){
         getStudentAvg();
     }
@@ -140,5 +133,11 @@ if (isset($_POST['mode'])){
     }
     if ($_POST['mode'] == "top10"){
         getTop10StudentAvg();
+    }
+}
+
+if (isset($_POST['admin'])){
+    if ($_POST['admin'] == "goToAdmin"){
+        header("location:admin/admin.php");
     }
 }
