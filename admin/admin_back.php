@@ -1,4 +1,5 @@
 <?php
+require_once("admin_html.php");
     //osszes ev osztalyok
     if (isset($_SESSION['evek'])) {
         $data_assoc = execQuery("SELECT DISTINCT year FROM classes c;");
@@ -29,6 +30,7 @@
         $tmp = array_column($data_assoc, 'name');
         $_SESSION['classes'] = $tmp;
         $classes = $_SESSION['classes'];
+        showClasses($ev);
     }
     else {
         $data_assoc = execQuery("SELECT DISTINCT name FROM classes c WHERE year = $ev;");
@@ -52,10 +54,13 @@
         $_SESSION['mainBtn'] = $_POST['mainBtn'];
         $mainBtn = $_SESSION['mainBtn'];
         if ($_POST['mainBtn'] == "subj"){
-            showSubjects();
+            showSubjects($ev);
         }
         if ($_POST['mainBtn'] == "oszt"){
-            showClassHeader();
+            showClassHeader($ev);
+        }
+        if ($_POST['mainBtn'] == "diak"){
+            showStudents($ev);
         }
     }
     else{
@@ -63,84 +68,70 @@
         $mainBtn = $_SESSION['mainBtn'];
     }
 
-
-function showSubjects(){
-    $data = execQuery("SELECT name FROM subjects;");
-    $array = array_column($data, 'name');
-    echo "<div class='table-div'>";
-    echo "<table>";
-    echo "<h2>Tantárgyak</h2> <button class='add-subj-btn'>+</button>";
-    echo "<tr class='tah'><th>Sorszám</th><th>Név</th></tr>";
-    foreach ($array as $i => $v){
-        echo "<tr><td>$i</td><td>$v</td></td></tr>";
+if (isset($_POST['add-class-btn'])){
+    showNewClass();
+    if (isset($_POST['newClassName']) && isset($_POST['newClassYear'])){
+        $newClassName = $_POST["newClassName"];
+        $newClassYear = $_POST["newClassYear"];
+        execSQL("INSERT INTO `classes`(name, year) VALUES ('$newClassName', $newClassYear)");
     }
-    echo "</table>";
-    echo "</div>";
 }
-
-
-function showClassHeader()
-{
-    ?>
-        <form action="admin.php" method="POST" class="cimkek">
-        <input type="hidden" name="mainBtn" value="<?php print_r($_SESSION['mainBtn']); ?>">
-
-        <label for="ev">Válassz évet:</label>
-        <select name="ev" id="ev">
-            <?php
-                foreach ($_SESSION['evek'] as $v){
-                    echo "<option value='$v' " . (($_POST['ev'] == $v) ? 'selected' : '') . ">$v</option>";
-                }
-            ?>
-        </select>
-        <button  type="submit" class="indito">Ev kivalasztasa</button>
-    </form><br>
-    <?php
-    showClasses();
-}
-function showClasses(){
-    $data = execQuery("SELECT name FROM classes;");
-    $array = array_column($data, 'name');
-    echo "<div class='table-div'>";
-    echo "<table>";
-    echo "<h2>Tantárgyak</h2><form><button name='add-class-btn' type='submit' class='add-class-btn'>+</button></form>";
-    echo "<tr class='tah'><th>Sorszám</th><th>Osztály</th></tr>";
-    foreach ($array as $i => $v){
-        echo "<tr><td>$i</td><td>$v</td></td></tr>";
+if (isset($_POST['add-subj-btn'])){
+    showNewSubj();
+    if (isset($_POST['newSubjName'])){
+        $newSubjName = $_POST["newSubjName"];
+        execSQL("INSERT INTO `subjects`(name) VALUES ('$newSubjName')");
     }
-    echo "</table>";
-    echo "</div>";
 }
-
-function showStudentHeader()
-{
-    ?>
-        <form action="admin.php" method="POST" class="cimkek">
-        <input type="hidden" name="mainBtn" value="<?php print_r($_SESSION['mainBtn']); ?>">
-
-        <label for="ev">Válassz évet:</label>
-        <select name="ev" id="ev">
-            <?php
-                foreach ($_SESSION['evek'] as $v){
-                    echo "<option value='$v' " . (($_POST['ev'] == $v) ? 'selected' : '') . ">$v</option>";
-                }
-            ?>
-        </select>
-        <button  type="submit" class="indito">Ev kivalasztasa</button>
-    </form><br>
-    <form action="admin.php" method="POST">
-        <input type="hidden" name="mainBtn" value="<?php print_r($_SESSION['mainBtn']); ?>">
-        <input type="hidden" name="ev" value="<?php print_r($_SESSION['ev']); ?>">
-        <label for="oszt">Válassz osztályt:</label>
-        <select name="oszt" id="oszt">
-        <?php
-            foreach ($_SESSION['classes'] as $v){
-                echo "<option value='$v' " . (($_POST['class'] == $v) ? 'selected' : '') . ">$v</option>";
-            }
-        ?>
-        </select>
-        <button  type="submit" class="indito">Osztaly kivalasztasa</button>
-    </form><br>
-
-    <?php
+if (isset($_POST['add-stu-btn'])){
+    showNewStu();
+    if (isset($_POST['newStuName']) && isset($_POST['newClassId'])){
+        $newStuName = $_POST["newStuName"];
+        $newClassId = $_POST["newClassId"];
+        execSQL("INSERT INTO `students`(name, class_id) VALUES ('$newStuName', $newClassId)");
+    }
+}
+//subjects
+if (isset($_POST['delete-subj'])){
+    $deleteId = $_POST['delete-subj'];
+    execSQL("DELETE FROM subjects WHERE id = $deleteId;");
+}
+if (isset($_POST['mod-subj'])){
+    $modId = $_POST['mod-subj'];
+    modifySubj($modId);
+}
+if (isset($_POST['upd-subj-btn'])){
+    $newSubjName = $_POST["newSubjName"];
+    $modId = (int) $_POST["modId"];
+    execSQL("UPDATE subjects SET name = '$newSubjName' WHERE id = '$modId';");
+}
+//classes
+if (isset($_POST['delete-class'])){
+    $deleteId = $_POST['delete-class'];
+    execSQL("DELETE FROM classes WHERE id = $deleteId;");
+}
+if (isset($_POST['mod-class'])){
+    $modId = $_POST['mod-class'];
+    modifyClass($modId);
+}
+if (isset($_POST['upd-class-btn'])){
+    $newClassName = $_POST["newClassName"];
+    $newClassYear = $_POST["newClassYear"];
+    $modId = (int) $_POST["modId"];
+    execSQL("UPDATE classes SET name = '$newClassName', year = $newClassYear WHERE id = '$modId';");
+}
+//students
+if (isset($_POST['delete-stu'])){
+    $deleteId = $_POST['delete-stu'];
+    execSQL("DELETE FROM students WHERE id = $deleteId;");
+}
+if (isset($_POST['mod-stu'])){
+    $modId = $_POST['mod-stu'];
+    modifyStu($modId);
+}
+if (isset($_POST['upd-stu-btn'])){
+    $newStuName = $_POST["newStuName"];
+    $newClassId = $_POST["newClassId"];
+    $modId = (int) $_POST["modId"];
+    execSQL("UPDATE students SET name = '$newStuName', class_id = $newClassId WHERE id = '$modId';");
 }

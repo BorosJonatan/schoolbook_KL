@@ -15,6 +15,7 @@
         <button id="a" name="mainBtn" type="submit" value="oszt">Osztályok</button>
         <button id="a" name="mainBtn" type="submit" value="diak">Diákok</button>
     </form>
+    
 
 </body>
 </html>
